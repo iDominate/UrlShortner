@@ -9,7 +9,7 @@ class RateLimiterMiddleware
 {
     private readonly RequestDelegate _next;
     private IConnectionMultiplexer _redisConnection;
-    private static int LimitPerTimeFrame => 10;
+    private static int LimitPerTimeFrame => 30;
     private static TimeSpan TimeFrame => TimeSpan.FromMinutes(1);
     public RateLimiterMiddleware(IConnectionMultiplexer redisConnection
     , RequestDelegate next)

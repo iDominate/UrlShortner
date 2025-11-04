@@ -1,28 +1,33 @@
 using System.Threading.Tasks;
 using FluentValidation;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using UrlShortner.Contracts;
 using UrlShortner.CQRS.ResolveUrl;
+using UrlShortner.Utils;
 
 namespace UrlShortner.Endpoints;
 
 public static class UrlResolverEndpoint
 {
-    public static IEndpointRouteBuilder RegisterEndpoint(this IEndpointRouteBuilder routeBuilder)
+    public static IEndpointRouteBuilder RegisterResolveEndpoint(this IEndpointRouteBuilder routeBuilder)
     {
-        routeBuilder.MapPost("api/shorten/{url}", HandleRequest);
+        routeBuilder.MapGet("api/resolve/{code}", HandleRequest);
 
         return routeBuilder;
     }
-    public static async Task<IResult> HandleRequest([AsParameters] Request request,
-    ISender sender, HttpContext context, IValidator<Request> validator)
+    public static async Task<IResult> HandleRequest([AsParameters] ResolveRequest request,
+    ISender sender, HttpContext context, [FromServices] IValidator<ResolveRequest> validator)
     {
-        var validateReuqest = await validator.ValidateAsync(request);
-        if(!validateReuqest.IsValid)
+        var validationResult = await validator.ValidateAsync(request);
+        if (validationResult.Errors.Count != 0)
         {
-            return Results.BadRequest(validateReuqest.Errors);
+            var errorsList = new List<string>();
+            validationResult.Errors.ForEach(e => errorsList.Add(e.ErrorMessage));
+            return Results.BadRequest(errorsList);
         }
-        ResolveUrlCommandRequest resolveUrlCommandRequest = request;
+        ResolveUrlCommandRequest resolveUrlCommandRequest = request.
+        ToResolveUrlCommandRequest(context.Connection.RemoteIpAddress!.ToString());
         var response = await sender.Send(resolveUrlCommandRequest);
         if(response.HasError)
         {

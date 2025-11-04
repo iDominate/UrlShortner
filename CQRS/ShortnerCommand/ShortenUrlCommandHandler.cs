@@ -20,7 +20,7 @@ IRequestHandler<ShortenUrlCommandRequest, ShortenUrlCommandResponse>
             await redisDatabase.StringSetAsync(UrlGuidIdnetifier.ToString(),
              request.OriginalUrl,
               expiry: TimeSpan.FromMinutes(30));
-            return ShortenUrlCommandResponse.Create(UrlGuidIdnetifier.ToString(), false, null);
+            return ShortenUrlCommandResponse.Create($"http://{request.Host}/api/resolve/{UrlGuidIdnetifier}", false, null);
             
         } catch(RedisException redisException)
         {
