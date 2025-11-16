@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  namespace: url-shortner-ns
+  name: url-ingress
+spec:
+  rules:
+    - host: local.my-app.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: url-service
+                port:
+                  number: 8080

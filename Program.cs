@@ -24,11 +24,8 @@ builder.Services.AddSwaggerGen();
 var app = builder.Build();
 app.UseMiddleware<RateLimiterMiddleware>();
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.RegisterEndpoints();
 app.Run();

@@ -1,0 +1,19 @@
+#!/bin/bash
+# NOTE: enter the following in /etc/hosts: 192.68.49.2 local.my-app.com
+
+kubectl apply -f Namespace.yaml
+
+kubens url-shortner-ns
+
+kubectl apply -f Service.redis.yaml 
+kubectl apply -f Service.rediss.yaml 
+kubectl apply -f Service.url.yaml 
+kubectl apply -f StatefulSet.yaml 
+kubectl apply -f Deployment.yaml
+kubectl apply -f Ingress.yaml
+
+
+
+
+
+
